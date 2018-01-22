@@ -8,13 +8,38 @@ const multer = require('multer');
 const storage = multer.diskStorage({
   destination: 'doc/',
   filename: function(req, file, cb) {
-    cb(null,file.fieldname - '-' + Date.now() + path.extname(file.originalname));
+    cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 }); 
 
+// check list for upload to server 
 const upload = multer({
-    storage: storage
+    storage: storage,
+    limits: {
+        // in bytes 
+        filesize: 1000000
+    },
+    fileFilter: function(req, file, cb){
+        checkFileType(file, cb);
+    }
 }).single('file-pdf');
+
+// little one for check types of files
+function checkFileType(file, cb){
+    // Allowed ext
+    const filetypes = /jpg|jpeg|png|gif/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime 
+    const mimetype = filetypes.test(file.mimetype);
+
+    if(mimetype && extname){
+        return cb(null,true);
+    } else {
+        cb('Error: Images only')
+    }
+}
+
 
 // connect static files 
 app.use(express.static(__dirname + '/doc/'))
@@ -49,8 +74,11 @@ app.post('/upload',(req, res) => {
         if(err){
             console.log('err')
         } else {
-            console.log(req.file)
-            res.send('test')
+            if(req.file == undefined){
+                console.log('No file selected')
+            } else {
+                console.log('file upload to doc/'+req.file.filename);
+            }
         }
     })
 });
