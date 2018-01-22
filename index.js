@@ -7,7 +7,7 @@ const multer = require('multer');
 // this saves your file into a directory called "doc"
 const storage = multer.diskStorage({
   destination: 'doc/',
-  filename: function(req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 }); 
@@ -19,7 +19,7 @@ const upload = multer({
         // in bytes 
         filesize: 1000000
     },
-    fileFilter: function(req, file, cb){
+    fileFilter: (req, file, cb) => {
         checkFileType(file, cb);
     }
 }).single('file-pdf');
@@ -48,23 +48,23 @@ app.use(express.static(__dirname + '/public/css'))
 app.use(express.static(__dirname + '/public/js'))
 
 // render index page
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 // dislpay pdf-file
-app.get('/docs', function (req, res) {
+app.get('/docs', (req, res) => {
     // for example we give you simple.pdf. I know its bad
     var filePath = "/doc/simple.pdf";
 
-    fs.readFile(__dirname + filePath , function (err,data){
+    fs.readFile(__dirname + filePath , (err,data) => {
         res.contentType("application/pdf");
         res.send(data);
     });
 });
 
 // display test form
-app.get('/upload', function(req,res){
+app.get('/upload', (req,res) => {
         res.sendFile(path.join(__dirname + '/public/form.html'));
 });
 
@@ -84,6 +84,6 @@ app.post('/upload',(req, res) => {
 });
 
 // connect to port 3000
-app.listen(3000, function () {
+app.listen(3000, () => {
   console.log('Server start');
 });
