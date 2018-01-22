@@ -1,42 +1,61 @@
-const server = require('server');
-const { get, post } = server.router;
-const { file, redirect } = server.reply;
+const express = require('express');
+const app = express();
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 
-// For example
-var filename = 'simple.pdf'
+// this saves your file into a directory called "doc"
+const storage = multer.diskStorage({
+  destination: 'doc/',
+  filename: function(req, file, cb) {
+    cb(null,file.fieldname - '-' + Date.now() + path.extname(file.originalname));
+  }
+}); 
 
-const home = get('/', ctx => 'index.html');
+const upload = multer({
+    storage: storage
+}).single('file-pdf');
 
-const api = [
+// connect static files 
+app.use(express.static(__dirname + '/doc/'))
+app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/public/css'))
+app.use(express.static(__dirname + '/public/js'))
 
-	// Example
-    get('/docs', ctx => file('doc/'+filename)),
-   	// For test rest api create little form
-    get('/api', ctx => file('public/form.html')),
-    post('/api', ctx => {
+// render index page
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/public/index.html'));
+});
 
-    // Show the submitted data on the console:
-    // ctx - context 
-    // files - type 
-    // profilepic - input name 
+// dislpay pdf-file
+app.get('/docs', function (req, res) {
+    // for example we give you simple.pdf. I know its bad
+    var filePath = "/doc/simple.pdf";
 
-    // Here we can see all prop of our file
-    // console.log(ctx.req.files.profilepic);    
+    fs.readFile(__dirname + filePath , function (err,data){
+        res.contentType("application/pdf");
+        res.send(data);
+    });
+});
 
-    // There is name, size, type and path on server
-    console.log(ctx.req.files.profilepic.name,'\n',
-    			ctx.req.files.profilepic.size,'\n',
-    			ctx.req.files.profilepic.type,'\n',
-    			ctx.req.files.profilepic.path);
-    // Redirect to main page
-    return redirect('/');
-  })
-]
+// display test form
+app.get('/upload', function(req,res){
+        res.sendFile(path.join(__dirname + '/public/form.html'));
+});
 
-server(
-	{
-		port: 3000, 
-		security: { csrf: false }
-	}, 
-	[home, api]
-);
+// save file 
+app.post('/upload',(req, res) => {    
+    upload(req,res,(err) => {
+        if(err){
+            console.log('err')
+        } else {
+            console.log(req.file)
+            res.send('test')
+        }
+    })
+});
+
+// connect to port 3000
+app.listen(3000, function () {
+  console.log('Server start');
+});
