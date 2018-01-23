@@ -17,6 +17,9 @@ const server = http.createServer(couchdbProxy(function(req, res, next) {
   });
 }));
 
+
+
+
 // this saves your file into a directory called "doc"
 const storage = multer.diskStorage({
   destination: 'doc/',
