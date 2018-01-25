@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 
+/*
 const server = http.createServer(couchdbProxy(function(req, res, next) {
   const token = req.get("Authorization");
  
@@ -16,7 +17,7 @@ const server = http.createServer(couchdbProxy(function(req, res, next) {
     });
   });
 }));
-
+*/
 
 
 
