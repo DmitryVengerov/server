@@ -4,22 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 
-/*
-const server = http.createServer(couchdbProxy(function(req, res, next) {
-  const token = req.get("Authorization");
- 
-  db.authenticateToken(token, (err, user) => {
-    if (err) return next(err);
- 
-    next(null, {
-      name: user.name,
-      roles: []
-    });
-  });
-}));
-*/
-
-
 
 // this saves your file into a directory called "doc"
 const storage = multer.diskStorage({
