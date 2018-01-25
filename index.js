@@ -3,34 +3,24 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const request = require('request');
+const router = express.Router()
+const db = require('./controllers/db')
 
 
-
-var request = require('request')
-
-var url = 'http://127.0.0.1:5984/'
-// db name 
-var db = 'todolist/'
-var id = 'document_id'
-
-// Create a database/collection inside CouchDB
-request.put(url + db, (err, resp, body) => {
-    // Add a document with an ID
-    request.put({
-        url: url + db + id,
-        body: { message: 'New Shiny Document', user: 'stefan' },
-        json: true,
-    }, (err, resp, body) => {
-        // Read the document
-        request(url + db + id, (err, res, body) => {
-            // string
-            console.log(typeof(body))
-            console.log(body)
-            // its not workin
-            console.log(body.user + ' : ' + body.message)
-        })
-    })
+router.get('/all', function(req, res) {
+  db.all('comments', {}, function(err, data) {
+    console.log('comments', {comments: data.rows})
+  })
 })
+
+// Get most recent comments
+router.get('/recent', function(req, res) {
+  db.all('comments', {limit: 20, descending: true}, function(err, data) {
+    console.log('comments', {comments: data.rows})
+  })
+})
+
 
 
 
