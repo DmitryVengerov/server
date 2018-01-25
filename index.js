@@ -4,25 +4,17 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const request = require('request');
-const router = express.Router()
-const db = require('./controllers/db')
+const nano = require('nano')('http://127.0.0.1:5984/');
 
+var books = nano.db.use('simple');
 
-router.get('/all', function(req, res) {
-  db.all('comments', {}, function(err, data) {
-    console.log('comments', {comments: data.rows})
-  })
-})
+//Insert a book document in the books database
 
-// Get most recent comments
-router.get('/recent', function(req, res) {
-  db.all('comments', {limit: 20, descending: true}, function(err, data) {
-    console.log('comments', {comments: data.rows})
-  })
-})
-
-
-
+//Get a list of all books
+books.list(function(err, body){
+    console.log(typeof(body))
+    console.log(body);
+});
 
 // this saves your file into a directory called "doc"
 const storage = multer.diskStorage({
