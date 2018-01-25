@@ -9,21 +9,24 @@ const multer = require('multer');
 var request = require('request')
 
 var url = 'http://127.0.0.1:5984/'
+// db name 
 var db = 'todolist/'
 var id = 'document_id'
 
 // Create a database/collection inside CouchDB
-request.put(url + db, function(err, resp, body) {
+request.put(url + db, (err, resp, body) => {
     // Add a document with an ID
     request.put({
         url: url + db + id,
         body: { message: 'New Shiny Document', user: 'stefan' },
         json: true,
-    }, function(err, resp, body) {
+    }, (err, resp, body) => {
         // Read the document
-        request(url + db + id, function(err, res, body) {
+        request(url + db + id, (err, res, body) => {
+            // string
             console.log(typeof(body))
             console.log(body)
+            // its not workin
             console.log(body.user + ' : ' + body.message)
         })
     })
