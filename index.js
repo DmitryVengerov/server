@@ -4,52 +4,70 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const request = require('request');
-const bodyParser  = require('body-parser');
+const bodyParser = require('body-parser');
 const nano = require('nano')('http://admin:admin@127.0.0.1:5984/');
-var books = nano.db.use('simple');
+
 
 app.use(bodyParser.urlencoded());
-
 app.use(bodyParser.json());
-// connect static files 
 app.use(express.static(__dirname + '/doc/'))
 app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/public/css'))
 app.use(express.static(__dirname + '/public/js'))
 
 /*
-nano.db.list(function(err, body) {
+nano.db.create('users', function(err, body) {
+  if (!err) {
+    console.log('database users created!');
+  }
+});
+*/
+
+nano.db.destroy('users', () => {
+    // create a new database
+    nano.db.create('users', () => {
+        // specify the database we are going to use
+        var users = nano.use('users');
+        // and insert a document in it
+        users.insert({ crazy: true }, 'test', (err, body, header) => {
+            if (err) {
+                console.log('[users.insert] ', err.message);
+                return;
+            }
+            console.log('you have inserted some test.')
+            console.log(body);
+        });
+
+
+    });
+});
+
+function usersAdd(data) {
+    var users = nano.use('users');
+    users.insert({ mail: data.email }, data.name, (err, body, header) => {
+        if (err) {
+            console.log('[users.insert] ', err.message);
+            return;
+        }
+        console.log('you have inserted new user.')
+        console.log(body);
+    });
+}
+
+nano.db.list((err, body) => {
     // body is an array
-    body.forEach(function(db) {
+    body.forEach((db) => {
         console.log('all databases ' + db);
     });
 });
 
-nano.db.get(function(err, body) {
+nano.db.get((err, body) => {
     if (!err) {
         console.log('got database info', body);
     }
 });
 
-*/
-/*
 // clean up the database we created previously
-nano.db.destroy('alice', function() {
-    // create a new database
-    nano.db.create('alice', function() {
-        // specify the database we are going to use
-        var alice = nano.use('alice');
-        // and insert a document in it
-        alice.insert({ crazy: true }, 'rabbit', function(err, body, header) {
-            if (err) {
-                console.log('[alice.insert] ', err.message);
-                return;
-            }
-            console.log('you have inserted the rabbit.')
-            console.log(body);
-        });
-    });
-});
 
 /*
 nano.session(function(err, session) {
@@ -102,7 +120,7 @@ function checkFileType(file, cb) {
 
 
 
-app.post("/", function(req, res) {
+app.post("/", (req, res) => {
     console.log(req.body.user.name)
 });
 // render index page
@@ -150,6 +168,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     console.log(req.body.user.name);
     console.log(req.body.user.email);
+    usersAdd(req.body.user);
 });
 
 
