@@ -4,12 +4,18 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const request = require('request');
-const bodyParser = require('body-parser')
+const bodyParser  = require('body-parser');
 const nano = require('nano')('http://admin:admin@127.0.0.1:5984/');
 var books = nano.db.use('simple');
 
-app.use(express.bodyParser());
+app.use(bodyParser.urlencoded());
 
+app.use(bodyParser.json());
+// connect static files 
+app.use(express.static(__dirname + '/doc/'))
+app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/public/css'))
+app.use(express.static(__dirname + '/public/js'))
 
 /*
 nano.db.list(function(err, body) {
@@ -93,11 +99,7 @@ function checkFileType(file, cb) {
 }
 
 
-// connect static files 
-app.use(express.static(__dirname + '/doc/'))
-app.use(express.static(__dirname + '/public'))
-app.use(express.static(__dirname + '/public/css'))
-app.use(express.static(__dirname + '/public/js'))
+
 
 
 app.post("/", function(req, res) {
@@ -146,7 +148,8 @@ app.get('/login', (req, res) => {
 
 // login form
 app.post('/login', (req, res) => {
-    console.log(req.body.user);
+    console.log(req.body.user.name);
+    console.log(req.body.user.email);
 });
 
 
