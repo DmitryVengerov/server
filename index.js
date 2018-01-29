@@ -6,7 +6,7 @@ const multer = require('multer');
 const request = require('request');
 const bodyParser = require('body-parser');
 const nano = require('nano')('http://admin:admin@127.0.0.1:5984/');
-
+const users = nano.use('users');
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
@@ -22,7 +22,7 @@ nano.db.create('users', function(err, body) {
   }
 });
 */
-
+/*
 nano.db.destroy('users', () => {
     // create a new database
     nano.db.create('users', () => {
@@ -40,13 +40,26 @@ nano.db.destroy('users', () => {
 
 
     });
-});
+});*/
+
+function checkUser(data) {
+    users.get(data.name, function(err, body) {
+        if (err) {
+            console.log("we can add");
+            return true
+        } else {
+            console.log("we already have")
+            return false
+        }
+    });
+}
+
 
 function usersAdd(data) {
-    var users = nano.use('users');
+
     users.insert({ mail: data.email }, data.name, (err, body, header) => {
         if (err) {
-            console.log('[users.insert] ', err.message);
+            console.log('[users.insert]', err.message);
             return;
         }
         console.log('you have inserted new user.')
@@ -54,6 +67,9 @@ function usersAdd(data) {
     });
 }
 
+
+
+/*
 nano.db.list((err, body) => {
     // body is an array
     body.forEach((db) => {
@@ -166,9 +182,14 @@ app.get('/login', (req, res) => {
 
 // login form
 app.post('/login', (req, res) => {
-    console.log(req.body.user.name);
-    console.log(req.body.user.email);
-    usersAdd(req.body.user);
+
+    if (!checkUser(req.body.user) == true) {
+        console.log(req.body.user.name);
+        console.log(req.body.user.email);
+        usersAdd(req.body.user);
+    } else {
+        console.log('we have that user');
+    }
 });
 
 
