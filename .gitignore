@@ -1,6 +1,7 @@
-# Trash from Mac OS 
+# Trash from Mac OS
 .DS_Store
 
+/doc/
 # Logs
 logs
 *.log
