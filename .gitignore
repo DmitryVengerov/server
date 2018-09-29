@@ -1,6 +1,8 @@
 # Trash from Mac OS
 .DS_Store
 
+package-lock.json
+
 /doc/
 # Logs
 logs
